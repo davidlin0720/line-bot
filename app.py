@@ -20,7 +20,7 @@ print('app = Flask(__name__)')
 def callback():
     print('def callbak()')
     # get X-Line-Signature header value
-    signature = request.headers['92f0c116fd50f9a4bcca75a255bd3c2c']
+    signature = request.headers['X-Line-Signature']
 
     # get request body as text
     body = request.get_data(as_text=True)
