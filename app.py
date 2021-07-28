@@ -1,4 +1,7 @@
-from flask import Flask, request, abort
+import os
+from datetime import datetime
+
+from flask import Flask, abort, request
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -16,16 +19,18 @@ line_bot_api = LineBotApi('qC/dQX0XuVYkhZyVA5kUj8YMs4f+dFZ09MZ3zG0+fB5K7JzrcTDqI
 handler = WebhookHandler('abba63a31e52b3e057531d672e88d31d')
 print('app = Flask(__name__)')
 
-@app.route("/callback", methods=['POST'])
+@app.route("/", methods=["GET", "POST"])
 def callback():
-    print('def callbak()')
-    # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
+    if request.method == "GET":
+        return "Hello Heroku"
 
-    # get request body as text
-    body = request.get_data(as_text=True)
-    print("Request body: " + body, "Signature: "+ signature)
-    app.logger.info("Request body: " + body)
+    if request.method == "POST":
+        # get X-Line-Signature header value
+        signature = request.headers['X-Line-Signature']
+        # get request body as text
+        body = request.get_data(as_text=True)
+ 
+    # app.logger.info("Request body: " + body)
 
     # handle webhook body
     try:
@@ -39,10 +44,11 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    msg = event.message.text
-    print(msg)
-    msg = msg.encode('utf-8')
-    line_bot_api.reply_message(event.reply_token,TextSendMessage(text=event.message.text))
+    get_message = event.message.text
+
+    # Send To Line
+    reply = TextSendMessage(text=f"{get_message}")
+    line_bot_api.reply_message(event.reply_token, reply)
 
 
 if __name__ == "__main__":
